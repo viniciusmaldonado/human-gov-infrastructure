@@ -15,14 +15,7 @@ resource "aws_security_group" "state_ec2_sg" {
         protocol    = "tcp"
         cidr_blocks = ["0.0.0.0/0"]
       }
-    
-      ingress {
-        from_port   = 0
-        to_port     = 0
-        protocol    = "-1"
-        security_groups = ["sg-027f57abd3fefda49"]
-      }
-      
+        
       egress {
         from_port   = 0
         to_port     = 0
@@ -41,8 +34,8 @@ resource "aws_instance" "state_ec2" {
     key_name = "humangov-ec2-key"
     vpc_security_group_ids = [aws_security_group.state_ec2_sg.id]
     iam_instance_profile = aws_iam_instance_profile.s3_dynamodb_full_access_instance_profile.name
-    
-  provisioner "local-exec" {
+
+      provisioner "local-exec" {
 	  command = "sleep 30; ssh-keyscan ${self.private_ip} >> ~/.ssh/known_hosts"
 	}
 	
@@ -54,7 +47,7 @@ resource "aws_instance" "state_ec2" {
 	  command = "sed -i '/${self.id}/d' /etc/ansible/hosts"
 	  when = destroy
 	}
-    
+
     tags = {
         Name = "humangov-${var.state_name}"
     }
